@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor, cleanup } from '@testing-library/react'
+import { render, screen, waitFor, cleanup, act } from '@testing-library/react'
 import { z } from 'zod'
 import { LiquidRenderer } from './LiquidRenderer'
 
@@ -154,11 +154,15 @@ describe('LiquidRenderer', () => {
       expect(screen.getByTestId('liquid-renderer')).toBeDefined()
     })
 
-    window.dispatchEvent(
-      new MessageEvent('message', {
-        data: { type: 'element-select', loc: '4:14', tagName: 'h1', computedStyles: {} },
-      })
-    )
+    // Flush all pending effects (including IframeSandbox's useEffect that registers
+    // the window message listener) before dispatching the event.
+    await act(async () => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: 'element-select', loc: '4:14', tagName: 'h1', computedStyles: {} },
+        })
+      )
+    })
 
     expect(mockMapDomLocToSource).toHaveBeenCalledWith('4:14', template)
     expect(onElementSelect).toHaveBeenCalledWith(sourceRange)
