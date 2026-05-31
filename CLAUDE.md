@@ -110,3 +110,17 @@ pnpm dev &              # backgrounded; wait for "ready in" in logs/dev.latest.l
 pnpm health             # dev server UP
 pnpm e2e                # smoke passes; logs/browser-console.log populated
 ```
+
+## Autonomous run guardrails (BOUND — never do these unattended)
+
+When running in an unattended/overnight session, these are hard limits. The
+`.claude/hooks/pre-bash.sh` guardrail blocks the destructive shell ones automatically;
+the rest are on you.
+
+1. Never commit directly to `main` — always work on a branch (or worktree).
+2. Never auto-merge a PR — open it as a **draft** and stop; a human approves.
+3. Never `npm publish` / `pnpm publish` / `changeset publish` manually — release is human-gated.
+4. Never `git push --force` (or `-f`) to any branch.
+5. Never disable TypeScript strict mode or suppress errors (`as any`, `@ts-ignore`, `@ts-expect-error`).
+6. One-way dependency rule: `packages/` must never import from `apps/`.
+7. Gate every commit on `pnpm verify` (typecheck → lint → test); a step is green only when its log ends `EXIT_CODE=0`.

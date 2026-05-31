@@ -14,6 +14,7 @@
     "typecheck": "scripts/with-logs.sh typecheck -- turbo run typecheck",
     "lint": "scripts/with-logs.sh lint -- turbo run lint",
     "e2e": "scripts/with-logs.sh e2e -- playwright test",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "health": "scripts/health-check.sh"
   },
   "devDependencies": {

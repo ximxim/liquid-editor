@@ -1,6 +1,6 @@
 {
   "worktree": {
-    "setup": "pnpm install"
+    "setup": "pnpm install --frozen-lockfile"
   },
   "scripts": {
     "Dev": {
