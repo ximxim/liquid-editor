@@ -4,11 +4,18 @@ export interface IframeSandboxProps {
   html: string
   onMessage?: (event: MessageEvent) => void
   className?: string
+  selectedLoc?: string | null
 }
 
 const SELECTION_HANDLER_SCRIPT = `
 <script>
 (function() {
+  var selectedEl = null;
+
+  var style = document.createElement('style');
+  style.textContent = '.liquid-ai-selected { outline: 2px solid #3b82f6; outline-offset: 2px; }';
+  document.head.appendChild(style);
+
   function findDataLoc(el) {
     var current = el;
     while (current && current !== document.body) {
@@ -18,9 +25,34 @@ const SELECTION_HANDLER_SCRIPT = `
     return null;
   }
 
+  function clearSelection() {
+    if (selectedEl) {
+      selectedEl.classList.remove('liquid-ai-selected');
+      selectedEl = null;
+    }
+  }
+
   document.addEventListener('click', function(e) {
     var target = findDataLoc(e.target);
-    if (!target) return;
+
+    if (!target) {
+      if (selectedEl) {
+        clearSelection();
+        window.parent.postMessage({ type: 'element-deselect' }, '*');
+      }
+      return;
+    }
+
+    if (target === selectedEl) {
+      clearSelection();
+      window.parent.postMessage({ type: 'element-deselect' }, '*');
+      return;
+    }
+
+    clearSelection();
+    selectedEl = target;
+    target.classList.add('liquid-ai-selected');
+
     var cs = window.getComputedStyle(target);
     window.parent.postMessage({
       type: 'element-select',
@@ -31,9 +63,25 @@ const SELECTION_HANDLER_SCRIPT = `
         margin: cs.margin,
         'font-size': cs.fontSize,
         color: cs.color,
-        'background-color': cs.backgroundColor
+        'background-color': cs.backgroundColor,
+        width: cs.width,
+        height: cs.height,
+        display: cs.display
       }
     }, '*');
+  });
+
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'set-selected') {
+      clearSelection();
+      if (e.data.loc) {
+        var el = document.querySelector('[data-loc="' + e.data.loc + '"]');
+        if (el) {
+          el.classList.add('liquid-ai-selected');
+          selectedEl = el;
+        }
+      }
+    }
   });
 
   function reportHeight() {
@@ -70,7 +118,7 @@ ${SELECTION_HANDLER_SCRIPT}
 </html>`
 }
 
-export function IframeSandbox({ html, onMessage, className }: IframeSandboxProps) {
+export function IframeSandbox({ html, onMessage, className, selectedLoc }: IframeSandboxProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
@@ -84,6 +132,12 @@ export function IframeSandbox({ html, onMessage, className }: IframeSandboxProps
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
   }, [onMessage])
+
+  useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe?.contentWindow) return
+    iframe.contentWindow.postMessage({ type: 'set-selected', loc: selectedLoc ?? null }, '*')
+  }, [selectedLoc])
 
   return (
     <iframe

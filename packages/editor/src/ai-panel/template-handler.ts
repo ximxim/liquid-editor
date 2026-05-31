@@ -1,5 +1,6 @@
 import { jsonrepair } from 'jsonrepair'
 import { createLiquidEngine } from '@liquid-ai/core'
+import type { SourceRange } from '@liquid-ai/core'
 
 export interface HandleResult {
   success: boolean
@@ -7,6 +8,18 @@ export interface HandleResult {
   explanation?: string
   contextUpdates?: Record<string, unknown>
   error?: string
+}
+
+export function applyTargetedEdit(
+  template: string,
+  sourceRange: SourceRange,
+  editedSnippet: string
+): string {
+  const { start, end } = sourceRange
+  if (start < 0 || end < 0 || start > template.length || end > template.length || start > end) {
+    return template
+  }
+  return template.slice(0, start) + editedSnippet + template.slice(end)
 }
 
 export function handleAssistantResponse(

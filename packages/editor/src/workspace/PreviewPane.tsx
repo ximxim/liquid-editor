@@ -2,7 +2,8 @@ import { LiquidRenderer } from '@liquid-ai/renderer'
 import { useEditorContext } from '../context/EditorContext'
 
 export function PreviewPane() {
-  const { template, schema, data, setSelectedElement } = useEditorContext()
+  const { template, schema, data, setSelectedElement, selectedElement } = useEditorContext()
+  const selectedLoc = selectedElement?.loc ?? null
 
   return (
     <div style={{ flex: 1, overflow: 'auto' }}>
@@ -12,6 +13,7 @@ export function PreviewPane() {
         data={data}
         instrumentSourceMap={true}
         onElementSelect={setSelectedElement}
+        selectedLoc={selectedLoc}
       />
     </div>
   )
