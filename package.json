@@ -1,0 +1,26 @@
+{
+  "name": "liquid-ai-editor",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "scripts/with-logs.sh dev -- turbo run dev",
+    "build": "scripts/with-logs.sh build -- turbo run build",
+    "test": "scripts/with-logs.sh test -- turbo run test",
+    "typecheck": "scripts/with-logs.sh typecheck -- turbo run typecheck",
+    "lint": "scripts/with-logs.sh lint -- turbo run lint",
+    "e2e": "scripts/with-logs.sh e2e -- playwright test",
+    "health": "scripts/health-check.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}
