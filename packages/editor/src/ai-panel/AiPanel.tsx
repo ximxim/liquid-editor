@@ -3,11 +3,9 @@ import { ThreadPrimitive, ComposerPrimitive } from '@assistant-ui/react'
 import { useEditorContext } from '../context/EditorContext.js'
 import { RuntimeProvider } from './RuntimeProvider.js'
 import { handleAssistantResponse } from './template-handler.js'
-import {
-  AdjustParameterToolUI,
-  AskQuestionToolUI,
-  ConfigurePreferencesToolUI,
-} from '../tools/register-tools.js'
+import { registerTools } from '../tools/register-tools.js'
+
+const [AdjustParameterToolUI, AskQuestionToolUI, ConfigurePreferencesToolUI] = registerTools()
 
 // Minimal message renderer — styled messages come in a later phase
 const MessageComponent: ComponentType = () => null

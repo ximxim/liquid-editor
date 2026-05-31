@@ -24,20 +24,22 @@ vi.mock('@liquid-ai/tool-ui', async (importOriginal) => {
   }
 })
 
-const { AdjustParameterToolUI, AskQuestionToolUI, ConfigurePreferencesToolUI } =
-  await import('./register-tools.js')
+const { registerTools } = await import('./register-tools.js')
 
 describe('register-tools', () => {
   describe('tool registrations export expected toolNames', () => {
     it('AdjustParameterToolUI has toolName adjust_parameter', () => {
+      const [AdjustParameterToolUI] = registerTools()
       expect(AdjustParameterToolUI.unstable_tool.toolName).toBe('adjust_parameter')
     })
 
     it('AskQuestionToolUI has toolName ask_question', () => {
+      const [, AskQuestionToolUI] = registerTools()
       expect(AskQuestionToolUI.unstable_tool.toolName).toBe('ask_question')
     })
 
     it('ConfigurePreferencesToolUI has toolName configure_preferences', () => {
+      const [, , ConfigurePreferencesToolUI] = registerTools()
       expect(ConfigurePreferencesToolUI.unstable_tool.toolName).toBe('configure_preferences')
     })
   })
