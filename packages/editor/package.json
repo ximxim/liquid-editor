@@ -39,12 +39,15 @@
     "vitest": "^2.0.0"
   },
   "dependencies": {
+    "@assistant-ui/react": "^0.14.12",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-liquid": "^6.3.2",
     "@liquid-ai/core": "workspace:^",
     "@liquid-ai/renderer": "workspace:^",
+    "@liquid-ai/runtime-webllm": "workspace:^",
     "@uiw/react-codemirror": "^4.25.10",
     "codemirror": "^6.0.2",
+    "jsonrepair": "^3.14.0",
     "zod": "^3.25.76"
   }
 }
