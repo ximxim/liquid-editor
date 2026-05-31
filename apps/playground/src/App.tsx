@@ -14,7 +14,7 @@ const template = `
   <h2 style="margin: 0 0 8px; font-size: 1.25rem;">{{ title }}</h2>
   <p style="color: #6b7280; font-size: 0.875rem; margin: 0 0 12px;">{{ description }}</p>
   <div style="display: flex; align-items: baseline; gap: 8px;">
-    <span style="font-size: 1.5rem; font-weight: bold;">${{ price }}</span>
+    <span style="font-size: 1.5rem; font-weight: bold;">\${{ price }}</span>
     {% if on_sale %}<span style="color: #ef4444; font-size: 0.875rem;">SALE</span>{% endif %}
   </div>
   {% if image_url %}<img src="{{ image_url }}" alt="{{ title }}" style="width: 100%; border-radius: 4px; margin-top: 16px;">{% endif %}
