@@ -53,7 +53,7 @@ Response:
 \`\`\``)
 
   parts.push(
-    '## Output Format\nAlways respond with JSON in this exact format:\n```json\n{\n  "template": "your Liquid template here",\n  "explanation": "brief description of what you did"\n}\n```'
+    '## Output Format\nAlways respond with JSON in this exact format:\n```json\n{\n  "template": "your Liquid template here",\n  "explanation": "brief description of what you did",\n  "context_updates": { "field": "value" }\n}\n```\nThe context_updates field is optional. Include it only when your template uses new variables not present in the current data — provide sample values for each new variable.'
   )
 
   if (customPrompt) {
