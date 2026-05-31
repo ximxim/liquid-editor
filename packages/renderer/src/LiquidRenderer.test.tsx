@@ -154,8 +154,13 @@ describe('LiquidRenderer', () => {
       expect(screen.getByTestId('liquid-renderer')).toBeDefined()
     })
 
-    // Flush all pending effects (including IframeSandbox's useEffect that registers
-    // the window message listener) before dispatching the event.
+    // Flush all pending microtasks and effects (IframeSandbox's useEffect registers
+    // the window message listener asynchronously after render).
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    // Dispatch inside act so React processes any resulting state updates.
     await act(async () => {
       window.dispatchEvent(
         new MessageEvent('message', {
@@ -164,8 +169,10 @@ describe('LiquidRenderer', () => {
       )
     })
 
-    expect(mockMapDomLocToSource).toHaveBeenCalledWith('4:14', template)
-    expect(onElementSelect).toHaveBeenCalledWith(sourceRange)
+    await waitFor(() => {
+      expect(mockMapDomLocToSource).toHaveBeenCalledWith('4:14', template)
+      expect(onElementSelect).toHaveBeenCalledWith(sourceRange)
+    })
   })
 
   it('shows loading state while render is in progress', () => {

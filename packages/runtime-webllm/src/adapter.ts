@@ -42,7 +42,8 @@ export class WebLLMAdapter implements ChatModelAdapter {
     this.selectedModelId = model.id
 
     return new Promise((resolve, reject) => {
-      const worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' })
+      // vite-ignore: worker URL resolved at runtime in the browser, not at library build time
+      const worker = new Worker(/* @vite-ignore */ new URL('./worker.ts', import.meta.url), { type: 'module' })
       this.worker = worker
 
       worker.addEventListener('message', (event: MessageEvent) => {
