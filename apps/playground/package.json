@@ -11,6 +11,7 @@
     "lint": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
   },
   "dependencies": {
+    "@liquid-ai/renderer": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
