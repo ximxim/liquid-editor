@@ -1,18 +1,73 @@
-import { useState, useCallback, type ComponentType } from 'react'
-import { ThreadPrimitive, ComposerPrimitive } from '@assistant-ui/react'
+import { useState, useCallback } from 'react'
+import { ThreadPrimitive, ComposerPrimitive, useComposerRuntime } from '@assistant-ui/react'
 import { useEditorContext } from '../context/EditorContext.js'
 import { RuntimeProvider } from './RuntimeProvider.js'
 import { handleAssistantResponse } from './template-handler.js'
 import { registerTools } from '../tools/register-tools.js'
+import { generateSuggestions } from './suggestion-adapter.js'
+import type { Suggestion } from './suggestion-adapter.js'
 
 const [AdjustParameterToolUI, AskQuestionToolUI, ConfigurePreferencesToolUI] = registerTools()
 
 // Minimal message renderer — styled messages come in a later phase
-const MessageComponent: ComponentType = () => null
+const MessageComponent = () => null
+
+function SuggestionChips({ suggestions }: { suggestions: Suggestion[] }) {
+  const composerRuntime = useComposerRuntime()
+
+  const handleSend = (prompt: string) => {
+    composerRuntime.setText(prompt)
+    composerRuntime.send()
+  }
+
+  if (suggestions.length === 0) return null
+
+  return (
+    <div
+      data-testid="suggestion-chips"
+      style={{
+        padding: '4px 8px',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '4px',
+        borderTop: '1px solid #e5e7eb',
+      }}
+    >
+      {suggestions.map((s) => (
+        <button
+          key={s.displayLabel}
+          data-testid={`suggestion-chip-${s.displayLabel.replace(/\s+/g, '-').toLowerCase()}`}
+          onClick={() => handleSend(s.prompt)}
+          style={{
+            fontSize: '0.75rem',
+            padding: '4px 10px',
+            borderRadius: '9999px',
+            border: '1px solid #d1d5db',
+            background: '#f9fafb',
+            cursor: 'pointer',
+          }}
+        >
+          {s.displayLabel}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 export function AiPanel() {
-  const { schema, data, updateTemplate, updateData } = useEditorContext()
+  const { schema, data, updateTemplate, updateData, selectedElement } = useEditorContext()
   const [wasUpdated, setWasUpdated] = useState(false)
+
+  const suggestions = generateSuggestions(
+    selectedElement
+      ? {
+          loc: selectedElement.loc,
+          tagName: selectedElement.tagName,
+          computedStyles: selectedElement.computedStyles,
+          snippet: selectedElement.snippet,
+        }
+      : null
+  )
 
   const handleAiMessage = useCallback(
     (text: string) => {
@@ -65,7 +120,11 @@ export function AiPanel() {
         )}
       </div>
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        <RuntimeProvider schema={schema} onAssistantMessage={handleAiMessage}>
+        <RuntimeProvider
+          schema={schema}
+          onAssistantMessage={handleAiMessage}
+          selectedElement={selectedElement}
+        >
           <AdjustParameterToolUI />
           <AskQuestionToolUI />
           <ConfigurePreferencesToolUI />
@@ -76,6 +135,7 @@ export function AiPanel() {
               />
             </ThreadPrimitive.Viewport>
           </ThreadPrimitive.Root>
+          <SuggestionChips suggestions={suggestions} />
           <div style={{ borderTop: '1px solid #e5e7eb', padding: '8px' }}>
             <ComposerPrimitive.Root>
               <ComposerPrimitive.Input placeholder="Ask the AI to edit your template..." />

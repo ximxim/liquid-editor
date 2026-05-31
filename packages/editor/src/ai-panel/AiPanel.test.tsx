@@ -1,9 +1,15 @@
 import React from 'react'
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen, cleanup, act } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
+import { render, screen, cleanup, act, fireEvent } from '@testing-library/react'
 import { z } from 'zod'
 import { AiPanel } from './AiPanel'
-import { EditorContextProvider } from '../context/EditorContext'
+import { EditorContextProvider, useEditorContext } from '../context/EditorContext'
+import type { SelectedElementInfo } from '../context/EditorContext'
+
+const { mockSetText, mockSend } = vi.hoisted(() => ({
+  mockSetText: vi.fn(),
+  mockSend: vi.fn(),
+}))
 
 vi.mock('../tools/register-tools.js', () => ({
   registerTools: () => [() => null, () => null, () => null] as const,
@@ -36,6 +42,10 @@ vi.mock('@assistant-ui/react', () => ({
       return Component
     },
   ),
+  useComposerRuntime: vi.fn(() => ({
+    setText: mockSetText,
+    send: mockSend,
+  })),
   ThreadPrimitive: {
     Root: ({ children }: { children?: React.ReactNode; style?: React.CSSProperties }) =>
       React.createElement('div', { 'data-testid': 'thread-root' }, children),
@@ -75,7 +85,29 @@ function renderPanel() {
   )
 }
 
+function renderPanelWithElement(element: SelectedElementInfo) {
+  function Setter() {
+    const { setSelectedElement } = useEditorContext()
+    React.useEffect(() => {
+      setSelectedElement(element)
+    }, [setSelectedElement])
+    return null
+  }
+
+  return render(
+    <EditorContextProvider template="" schema={schema}>
+      <Setter />
+      <AiPanel />
+    </EditorContextProvider>
+  )
+}
+
 describe('AiPanel', () => {
+  beforeEach(() => {
+    mockSetText.mockClear()
+    mockSend.mockClear()
+  })
+
   it('renders AI Assistant heading', () => {
     renderPanel()
     expect(screen.getByText('AI Assistant')).toBeDefined()
@@ -95,5 +127,56 @@ describe('AiPanel', () => {
     })
 
     expect(screen.getByTestId('composer')).toBeDefined()
+  })
+
+  it('suggestion chips render when selectedElement is set in context', async () => {
+    const { isWebGPUAvailable } = await import('@liquid-ai/runtime-webllm')
+    vi.mocked(isWebGPUAvailable).mockReturnValue(true)
+
+    const element: SelectedElementInfo = {
+      start: 0,
+      end: 10,
+      snippet: '<h1>test</h1>',
+      loc: '0:10',
+      tagName: 'h1',
+      computedStyles: { padding: '0px', 'font-size': '24px', color: '#000' },
+    }
+
+    await act(async () => {
+      renderPanelWithElement(element)
+    })
+
+    const chips = screen.getByTestId('suggestion-chips')
+    expect(chips).toBeDefined()
+    expect(chips.querySelectorAll('button').length).toBeGreaterThan(0)
+  })
+
+  it('clicking a suggestion chip triggers a prompt send', async () => {
+    const { isWebGPUAvailable } = await import('@liquid-ai/runtime-webllm')
+    vi.mocked(isWebGPUAvailable).mockReturnValue(true)
+
+    const element: SelectedElementInfo = {
+      start: 0,
+      end: 10,
+      snippet: '<h1>test</h1>',
+      loc: '0:10',
+      tagName: 'h1',
+      computedStyles: { padding: '0px', 'font-size': '24px', color: '#000' },
+    }
+
+    await act(async () => {
+      renderPanelWithElement(element)
+    })
+
+    const chips = screen.getByTestId('suggestion-chips')
+    const firstChip = chips.querySelector('button')
+    expect(firstChip).toBeDefined()
+
+    await act(async () => {
+      fireEvent.click(firstChip!)
+    })
+
+    expect(mockSetText).toHaveBeenCalled()
+    expect(mockSend).toHaveBeenCalled()
   })
 })

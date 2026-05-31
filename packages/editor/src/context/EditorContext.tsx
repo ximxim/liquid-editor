@@ -1,16 +1,24 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { ZodType } from 'zod'
-import type { SourceRange } from '@liquid-ai/core'
 import { generateMockData } from '@liquid-ai/core'
+
+export interface SelectedElementInfo {
+  start: number
+  end: number
+  snippet: string
+  loc: string
+  tagName: string
+  computedStyles: Record<string, string>
+}
 
 export interface EditorContextValue {
   template: string
   data: Record<string, unknown>
   schema: ZodType
-  selectedElement: SourceRange | null
+  selectedElement: SelectedElementInfo | null
   updateTemplate: (t: string) => void
   updateData: (d: Record<string, unknown>) => void
-  setSelectedElement: (el: SourceRange | null) => void
+  setSelectedElement: (el: SelectedElementInfo | null) => void
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -28,7 +36,7 @@ export function EditorContextProvider({
 }: EditorContextProviderProps) {
   const [template, setTemplate] = useState(initialTemplate)
   const [data, setData] = useState<Record<string, unknown>>(() => generateMockData(schema))
-  const [selectedElement, setSelectedElement] = useState<SourceRange | null>(null)
+  const [selectedElement, setSelectedElement] = useState<SelectedElementInfo | null>(null)
 
   return (
     <EditorContext.Provider

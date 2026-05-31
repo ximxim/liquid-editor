@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { ZodType } from 'zod'
 import { EditorContextProvider, useEditorContext } from './context/EditorContext'
 import { Toolbar } from './layout/Toolbar'
@@ -22,8 +22,22 @@ function EditorShell({
   onSave: (t: string) => void
   className?: string
 }) {
-  const { template } = useEditorContext()
+  const { template, setSelectedElement } = useEditorContext()
   const [activeSegment, setActiveSegment] = useState<Segment>('preview')
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedElement(null)
+      }
+    },
+    [setSelectedElement]
+  )
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   return (
     <div

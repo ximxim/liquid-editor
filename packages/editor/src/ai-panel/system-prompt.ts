@@ -1,7 +1,17 @@
 import type { ZodType } from 'zod'
 import { introspectSchema } from '@liquid-ai/core'
 
-export function buildSystemPrompt(schema: ZodType, customPrompt?: string): string {
+export interface SelectedElementContext {
+  tagName: string
+  computedStyles: Record<string, string>
+  snippet?: string
+}
+
+export function buildSystemPrompt(
+  schema: ZodType,
+  customPrompt?: string,
+  selectedElement?: SelectedElementContext | null
+): string {
   const info = introspectSchema(schema)
   const jsonSchemaStr = JSON.stringify(info.jsonSchema, null, 2)
   const requiredFieldNames = info.required.map((f) => f.name)
@@ -17,6 +27,14 @@ export function buildSystemPrompt(schema: ZodType, customPrompt?: string): strin
   if (requiredFieldNames.length > 0) {
     parts.push(
       `## Required Fields\nThese fields MUST appear in every template: ${requiredFieldNames.join(', ')}`
+    )
+  }
+
+  if (selectedElement) {
+    const stylesStr = JSON.stringify(selectedElement.computedStyles)
+    const snippetPart = selectedElement.snippet ? ` and source: ${selectedElement.snippet}` : ''
+    parts.push(
+      `## Selected Element\nThe user has selected: ${selectedElement.tagName} with computed styles: ${stylesStr}${snippetPart}\nModify only this element when making changes.`
     )
   }
 

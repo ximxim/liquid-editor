@@ -20,6 +20,8 @@ export default defineConfig({
         'react/jsx-runtime',
         /^@liquid-ai\//,
         '@assistant-ui/react',
+        /^@codemirror\//,
+        '@uiw/react-codemirror',
       ],
     },
   },

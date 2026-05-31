@@ -34,6 +34,28 @@ describe('IframeSandbox', () => {
     expect(srcdoc).toContain('postMessage')
   })
 
+  it('srcdoc contains .liquid-ai-selected style', () => {
+    const { container } = render(<IframeSandbox html="<p>Test</p>" />)
+    const iframe = container.querySelector('iframe')
+    const srcdoc = iframe?.getAttribute('srcdoc') ?? ''
+    expect(srcdoc).toContain('liquid-ai-selected')
+    expect(srcdoc).toContain('outline: 2px solid #3b82f6')
+  })
+
+  it('srcdoc contains set-selected message handler', () => {
+    const { container } = render(<IframeSandbox html="<p>Test</p>" />)
+    const iframe = container.querySelector('iframe')
+    const srcdoc = iframe?.getAttribute('srcdoc') ?? ''
+    expect(srcdoc).toContain('set-selected')
+  })
+
+  it('srcdoc contains element-deselect postMessage for blank area click', () => {
+    const { container } = render(<IframeSandbox html="<p>Test</p>" />)
+    const iframe = container.querySelector('iframe')
+    const srcdoc = iframe?.getAttribute('srcdoc') ?? ''
+    expect(srcdoc).toContain('element-deselect')
+  })
+
   it('calls onMessage when window receives a message event', () => {
     const onMessage = vi.fn()
     render(<IframeSandbox html="<p>Test</p>" onMessage={onMessage} />)
