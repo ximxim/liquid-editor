@@ -14,12 +14,14 @@ import {
 } from '@liquid-ai/runtime-webllm'
 import type { LoadProgress, ChatMessage } from '@liquid-ai/runtime-webllm'
 import { buildSystemPrompt } from './system-prompt.js'
+import type { SelectedElementInfo } from '../context/EditorContext.js'
 
 export interface RuntimeProviderProps {
   schema: ZodType
   systemPrompt?: string
   modelId?: string
   onAssistantMessage?: (text: string) => void
+  selectedElement?: SelectedElementInfo | null
   children: ReactNode
 }
 
@@ -78,23 +80,22 @@ function InnerProvider({
   systemPrompt,
   modelId,
   onAssistantMessage,
+  selectedElement,
   children,
 }: RuntimeProviderProps) {
   const [isReady, setIsReady] = useState(false)
   const [progress, setProgress] = useState<LoadProgress | null>(null)
 
-  // Mutable refs so closures always see the latest values without recreating adapters
   const onAssistantMessageRef = useRef(onAssistantMessage)
   const systemPromptRef = useRef('')
   const setProgressRef = useRef((p: LoadProgress) => setProgress(p))
 
-  // Keep refs current on every render
   onAssistantMessageRef.current = onAssistantMessage
   setProgressRef.current = (p: LoadProgress) => setProgress(p)
 
   useEffect(() => {
-    systemPromptRef.current = buildSystemPrompt(schema, systemPrompt)
-  }, [schema, systemPrompt])
+    systemPromptRef.current = buildSystemPrompt(schema, systemPrompt, selectedElement)
+  }, [schema, systemPrompt, selectedElement])
 
   const [{ adapter, webllm }] = useState(() => {
     const w = new WebLLMAdapter({
