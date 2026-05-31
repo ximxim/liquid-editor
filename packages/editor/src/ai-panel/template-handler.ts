@@ -5,6 +5,7 @@ export interface HandleResult {
   success: boolean
   template?: string
   explanation?: string
+  contextUpdates?: Record<string, unknown>
   error?: string
 }
 
@@ -36,6 +37,13 @@ export function handleAssistantResponse(
   const data = parsed as Record<string, unknown>
   const template = data['template'] as string
   const explanation = typeof data['explanation'] === 'string' ? data['explanation'] : undefined
+  const rawContextUpdates = data['context_updates']
+  const contextUpdates =
+    typeof rawContextUpdates === 'object' &&
+    rawContextUpdates !== null &&
+    !Array.isArray(rawContextUpdates)
+      ? (rawContextUpdates as Record<string, unknown>)
+      : undefined
 
   const engine = createLiquidEngine({ strictVariables: false, strictFilters: false })
   try {
@@ -46,5 +54,5 @@ export function handleAssistantResponse(
   }
 
   updateTemplate(template)
-  return { success: true, template, explanation }
+  return { success: true, template, explanation, contextUpdates }
 }

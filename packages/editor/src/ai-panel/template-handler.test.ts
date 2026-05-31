@@ -73,4 +73,31 @@ describe('handleAssistantResponse', () => {
     expect(result.error).toBe('Could not parse AI response')
     expect(updateTemplate).not.toHaveBeenCalled()
   })
+
+  it('response with context_updates parses and returns them', () => {
+    const updateTemplate = vi.fn()
+    const response = JSON.stringify({
+      template: '<p>{{ title }}</p>',
+      explanation: 'Added title',
+      context_updates: { subtitle: 'World', count: 3 },
+    })
+
+    const result = handleAssistantResponse(response, updateTemplate)
+
+    expect(result.success).toBe(true)
+    expect(result.contextUpdates).toEqual({ subtitle: 'World', count: 3 })
+  })
+
+  it('response without context_updates returns undefined contextUpdates', () => {
+    const updateTemplate = vi.fn()
+    const response = JSON.stringify({
+      template: '<p>{{ title }}</p>',
+      explanation: 'Added title',
+    })
+
+    const result = handleAssistantResponse(response, updateTemplate)
+
+    expect(result.success).toBe(true)
+    expect(result.contextUpdates).toBeUndefined()
+  })
 })

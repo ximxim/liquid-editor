@@ -8,18 +8,21 @@ import { handleAssistantResponse } from './template-handler.js'
 const MessageComponent: ComponentType = () => null
 
 export function AiPanel() {
-  const { schema, updateTemplate } = useEditorContext()
+  const { schema, data, updateTemplate, updateData } = useEditorContext()
   const [wasUpdated, setWasUpdated] = useState(false)
 
   const handleAiMessage = useCallback(
     (text: string) => {
       const result = handleAssistantResponse(text, updateTemplate)
       if (result.success) {
+        if (result.contextUpdates) {
+          updateData({ ...data, ...result.contextUpdates })
+        }
         setWasUpdated(true)
         setTimeout(() => setWasUpdated(false), 3000)
       }
     },
-    [updateTemplate],
+    [updateTemplate, updateData, data],
   )
 
   return (
