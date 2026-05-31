@@ -6,6 +6,10 @@ import { LiquidEditor } from '../LiquidEditor'
 import { EditorContextProvider, useEditorContext } from '../context/EditorContext'
 import { handleAssistantResponse } from './template-handler'
 
+vi.mock('../tools/register-tools.js', () => ({
+  registerTools: () => [() => null, () => null, () => null] as const,
+}))
+
 vi.mock('@liquid-ai/core', () => ({
   introspectSchema: vi.fn(() => ({
     required: [{ name: 'title', type: 'string', isArray: false }],
@@ -42,6 +46,12 @@ vi.mock('@assistant-ui/react', () => ({
   useLocalRuntime: vi.fn(() => ({ type: 'local' })),
   AssistantRuntimeProvider: ({ children }: { children: React.ReactNode }) =>
     React.createElement('div', { 'data-testid': 'runtime-provider' }, children),
+  makeAssistantToolUI: vi.fn(
+    (tool: { toolName: string; render: unknown }) => {
+      const Component = Object.assign(() => null, { unstable_tool: tool })
+      return Component
+    },
+  ),
   ThreadPrimitive: {
     Root: ({ children }: { children?: React.ReactNode; style?: React.CSSProperties }) =>
       React.createElement('div', { 'data-testid': 'thread-root' }, children),
@@ -57,6 +67,12 @@ vi.mock('@assistant-ui/react', () => ({
     Send: ({ children }: { children?: React.ReactNode; style?: React.CSSProperties }) =>
       React.createElement('button', { 'data-testid': 'composer-send' }, children),
   },
+}))
+
+vi.mock('@liquid-ai/tool-ui', () => ({
+  ParameterSlider: () => null,
+  QuestionFlow: () => null,
+  PreferencesPanel: () => null,
 }))
 
 vi.mock('./system-prompt.js', () => ({
