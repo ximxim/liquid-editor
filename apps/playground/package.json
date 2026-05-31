@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@liquid-ai/core": "workspace:^",
+    "@liquid-ai/editor": "workspace:^",
     "@liquid-ai/renderer": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

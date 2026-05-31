@@ -1,1 +1,2 @@
-export const placeholder = '@liquid-ai/editor placeholder'
+export { LiquidEditor } from './LiquidEditor'
+export type { LiquidEditorProps } from './LiquidEditor'

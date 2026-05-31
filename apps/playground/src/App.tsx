@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { LiquidRenderer } from '@liquid-ai/renderer'
+import { LiquidEditor } from '@liquid-ai/editor'
 
 const schema = z.object({
   title: z.string(),
@@ -23,10 +23,28 @@ const template = `
 
 export function App() {
   return (
-    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
-      <h1 data-testid="harness-status">harness-ok</h1>
-      <h2>Product Card Preview</h2>
-      <LiquidRenderer template={template} schema={schema} />
+    <main
+      style={{
+        fontFamily: 'system-ui, sans-serif',
+        padding: '2rem',
+        height: '100vh',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <h1 data-testid="harness-status" style={{ margin: '0 0 1rem' }}>
+        harness-ok
+      </h1>
+      <div style={{ flex: 1, height: 'calc(100vh - 4rem)' }}>
+        <LiquidEditor
+          template={template}
+          schema={schema}
+          onSave={(t) => {
+            console.log('saved:', t)
+          }}
+        />
+      </div>
     </main>
   )
 }
