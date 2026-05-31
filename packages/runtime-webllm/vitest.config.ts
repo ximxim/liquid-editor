@@ -1,4 +1,8 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import vitestBase from '../../tooling/vitest/base'
 
-export default mergeConfig(vitestBase, defineConfig({}))
+export default mergeConfig(vitestBase, defineConfig({
+  test: {
+    setupFiles: ['./src/test-setup.ts'],
+  },
+}))
