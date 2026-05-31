@@ -26,14 +26,21 @@
     "react-dom": ">=18"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^2.0.0",
+    "jsdom": "^25.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.0.0",
-    "vitest": "^2.0.0",
-    "jsdom": "^25.0.0"
+    "vitest": "^2.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
   }
 }

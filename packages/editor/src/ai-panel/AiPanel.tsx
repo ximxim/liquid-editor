@@ -3,6 +3,9 @@ import { ThreadPrimitive, ComposerPrimitive } from '@assistant-ui/react'
 import { useEditorContext } from '../context/EditorContext.js'
 import { RuntimeProvider } from './RuntimeProvider.js'
 import { handleAssistantResponse } from './template-handler.js'
+import { registerTools } from '../tools/register-tools.js'
+
+const [AdjustParameterToolUI, AskQuestionToolUI, ConfigurePreferencesToolUI] = registerTools()
 
 // Minimal message renderer — styled messages come in a later phase
 const MessageComponent: ComponentType = () => null
@@ -63,6 +66,9 @@ export function AiPanel() {
       </div>
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <RuntimeProvider schema={schema} onAssistantMessage={handleAiMessage}>
+          <AdjustParameterToolUI />
+          <AskQuestionToolUI />
+          <ConfigurePreferencesToolUI />
           <ThreadPrimitive.Root style={{ flex: 1, overflow: 'auto', padding: '8px' }}>
             <ThreadPrimitive.Viewport>
               <ThreadPrimitive.Messages

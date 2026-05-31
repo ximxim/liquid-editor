@@ -53,6 +53,10 @@ Response:
 \`\`\``)
 
   parts.push(
+    '## Interactive Tools\n\nYou have access to interactive UI tools for gathering precise user input:\n\n- **adjust_parameter**: Use for single numeric adjustments such as margin, padding, font-size, line-height, or opacity. Call this when the user wants to fine-tune a numeric CSS property.\n- **ask_question**: Use to clarify an ambiguous request before generating a template. Call this when the user\'s intent is unclear and you need to choose between distinct approaches.\n- **configure_preferences**: Use for multi-field style configuration such as typography (font, size, weight), colors, or layout options. Call this when several related settings need to be configured together.\n\nOnly call a tool when it genuinely helps gather input you cannot infer. After receiving the tool result, apply the settings and return the updated template.'
+  )
+
+  parts.push(
     '## Output Format\nAlways respond with JSON in this exact format:\n```json\n{\n  "template": "your Liquid template here",\n  "explanation": "brief description of what you did",\n  "context_updates": { "field": "value" }\n}\n```\nThe context_updates field is optional. Include it only when your template uses new variables not present in the current data — provide sample values for each new variable.'
   )
 
