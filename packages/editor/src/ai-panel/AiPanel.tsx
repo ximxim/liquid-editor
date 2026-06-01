@@ -5,6 +5,7 @@ import { RuntimeProvider } from './RuntimeProvider.js'
 import { handleAssistantResponse } from './template-handler.js'
 import { registerTools } from '../tools/register-tools.js'
 import { generateSuggestions } from './suggestion-adapter.js'
+import { HistoryPanel } from './HistoryPanel.js'
 import type { Suggestion } from './suggestion-adapter.js'
 
 const [AdjustParameterToolUI, AskQuestionToolUI, ConfigurePreferencesToolUI] = registerTools()
@@ -57,6 +58,7 @@ function SuggestionChips({ suggestions }: { suggestions: Suggestion[] }) {
 export function AiPanel() {
   const { schema, data, updateTemplate, updateData, selectedElement } = useEditorContext()
   const [wasUpdated, setWasUpdated] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   const suggestions = generateSuggestions(
     selectedElement
@@ -104,7 +106,7 @@ export function AiPanel() {
           gap: '8px',
         }}
       >
-        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>AI Assistant</h2>
+        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, flex: 1 }}>AI Assistant</h2>
         {wasUpdated && (
           <span
             style={{
@@ -118,31 +120,49 @@ export function AiPanel() {
             Template updated
           </span>
         )}
+        <button
+          data-testid="history-toggle"
+          onClick={() => setShowHistory((prev) => !prev)}
+          style={{
+            fontSize: '0.75rem',
+            padding: '4px 10px',
+            borderRadius: '6px',
+            border: '1px solid #d1d5db',
+            background: showHistory ? '#f3f4f6' : '#ffffff',
+            cursor: 'pointer',
+          }}
+        >
+          {showHistory ? 'Chat' : 'History'}
+        </button>
       </div>
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        <RuntimeProvider
-          schema={schema}
-          onAssistantMessage={handleAiMessage}
-          selectedElement={selectedElement}
-        >
-          <AdjustParameterToolUI />
-          <AskQuestionToolUI />
-          <ConfigurePreferencesToolUI />
-          <ThreadPrimitive.Root style={{ flex: 1, overflow: 'auto', padding: '8px' }}>
-            <ThreadPrimitive.Viewport>
-              <ThreadPrimitive.Messages
-                components={{ Message: MessageComponent }}
-              />
-            </ThreadPrimitive.Viewport>
-          </ThreadPrimitive.Root>
-          <SuggestionChips suggestions={suggestions} />
-          <div style={{ borderTop: '1px solid #e5e7eb', padding: '8px' }}>
-            <ComposerPrimitive.Root>
-              <ComposerPrimitive.Input placeholder="Ask the AI to edit your template..." />
-              <ComposerPrimitive.Send>Send</ComposerPrimitive.Send>
-            </ComposerPrimitive.Root>
-          </div>
-        </RuntimeProvider>
+        {showHistory ? (
+          <HistoryPanel />
+        ) : (
+          <RuntimeProvider
+            schema={schema}
+            onAssistantMessage={handleAiMessage}
+            selectedElement={selectedElement}
+          >
+            <AdjustParameterToolUI />
+            <AskQuestionToolUI />
+            <ConfigurePreferencesToolUI />
+            <ThreadPrimitive.Root style={{ flex: 1, overflow: 'auto', padding: '8px' }}>
+              <ThreadPrimitive.Viewport>
+                <ThreadPrimitive.Messages
+                  components={{ Message: MessageComponent }}
+                />
+              </ThreadPrimitive.Viewport>
+            </ThreadPrimitive.Root>
+            <SuggestionChips suggestions={suggestions} />
+            <div style={{ borderTop: '1px solid #e5e7eb', padding: '8px' }}>
+              <ComposerPrimitive.Root>
+                <ComposerPrimitive.Input placeholder="Ask the AI to edit your template..." />
+                <ComposerPrimitive.Send>Send</ComposerPrimitive.Send>
+              </ComposerPrimitive.Root>
+            </div>
+          </RuntimeProvider>
+        )}
       </div>
     </div>
   )
