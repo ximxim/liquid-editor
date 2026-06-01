@@ -113,6 +113,13 @@ describe('AiPanel', () => {
     expect(screen.getByText('AI Assistant')).toBeDefined()
   })
 
+  it('root element has role="complementary" and aria-label="AI assistant"', () => {
+    const { container } = renderPanel()
+    const root = container.firstChild as HTMLElement
+    expect(root.getAttribute('role')).toBe('complementary')
+    expect(root.getAttribute('aria-label')).toBe('AI assistant')
+  })
+
   it('shows WebGPU fallback message when WebGPU unavailable', () => {
     renderPanel()
     expect(screen.getByText(/WebGPU is required/)).toBeDefined()

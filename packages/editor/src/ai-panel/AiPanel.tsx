@@ -7,6 +7,7 @@ import { registerTools } from '../tools/register-tools.js'
 import { generateSuggestions } from './suggestion-adapter.js'
 import { HistoryPanel } from './HistoryPanel.js'
 import type { Suggestion } from './suggestion-adapter.js'
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../theme.js'
 
 const [AdjustParameterToolUI, AskQuestionToolUI, ConfigurePreferencesToolUI] = registerTools()
 
@@ -87,8 +88,10 @@ export function AiPanel() {
 
   return (
     <div
+      role="complementary"
+      aria-label="AI assistant"
       style={{
-        borderLeft: '1px solid #e5e7eb',
+        borderLeft: `1px solid ${COLORS.border}`,
         width: '320px',
         height: '100%',
         display: 'flex',
@@ -99,22 +102,22 @@ export function AiPanel() {
     >
       <div
         style={{
-          padding: '12px 16px',
-          borderBottom: '1px solid #e5e7eb',
+          padding: `${SPACING.md} ${SPACING.lg}`,
+          borderBottom: `1px solid ${COLORS.border}`,
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: SPACING.sm,
         }}
       >
-        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, flex: 1 }}>AI Assistant</h2>
+        <h2 style={{ margin: 0, fontSize: FONT_SIZE.base, fontWeight: 600, flex: 1 }}>AI Assistant</h2>
         {wasUpdated && (
           <span
             style={{
-              fontSize: '0.75rem',
-              color: '#16a34a',
-              backgroundColor: '#f0fdf4',
-              padding: '2px 8px',
-              borderRadius: '9999px',
+              fontSize: FONT_SIZE.xs,
+              color: COLORS.textSuccess,
+              backgroundColor: COLORS.bgSuccess,
+              padding: `2px ${SPACING.sm}`,
+              borderRadius: RADIUS.full,
             }}
           >
             Template updated
@@ -124,11 +127,11 @@ export function AiPanel() {
           data-testid="history-toggle"
           onClick={() => setShowHistory((prev) => !prev)}
           style={{
-            fontSize: '0.75rem',
-            padding: '4px 10px',
-            borderRadius: '6px',
-            border: '1px solid #d1d5db',
-            background: showHistory ? '#f3f4f6' : '#ffffff',
+            fontSize: FONT_SIZE.xs,
+            padding: `${SPACING.xs} 10px`,
+            borderRadius: RADIUS.md,
+            border: `1px solid ${COLORS.borderLight}`,
+            background: showHistory ? COLORS.bgMuted : COLORS.bgSegmentActive,
             cursor: 'pointer',
           }}
         >
