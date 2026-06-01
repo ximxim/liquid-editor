@@ -1,3 +1,5 @@
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../theme.js'
+
 export type Segment = 'preview' | 'code' | 'context'
 
 export interface ToolbarProps {
@@ -16,28 +18,30 @@ const SEGMENTS: { id: Segment; label: string }[] = [
 export function Toolbar({ activeSegment, onSegmentChange, onSave, label }: ToolbarProps) {
   return (
     <div
+      role="toolbar"
+      aria-label="Editor toolbar"
       style={{
         display: 'flex',
         alignItems: 'center',
         height: '48px',
-        borderBottom: '1px solid #e5e7eb',
-        backgroundColor: '#f9fafb',
-        padding: '0 16px',
-        gap: '8px',
+        borderBottom: `1px solid ${COLORS.border}`,
+        backgroundColor: COLORS.bgSurface,
+        padding: `0 ${SPACING.lg}`,
+        gap: SPACING.sm,
         boxSizing: 'border-box',
       }}
     >
       <div style={{ flex: 1 }}>
         {label && (
-          <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{label}</span>
+          <span style={{ fontSize: FONT_SIZE.sm, fontWeight: 500 }}>{label}</span>
         )}
       </div>
       <div
         style={{
           display: 'flex',
           gap: '2px',
-          background: '#e5e7eb',
-          borderRadius: '6px',
+          background: COLORS.bgSegmentGroup,
+          borderRadius: RADIUS.md,
           padding: '2px',
         }}
       >
@@ -50,12 +54,12 @@ export function Toolbar({ activeSegment, onSegmentChange, onSave, label }: Toolb
               aria-pressed={isActive}
               onClick={() => onSegmentChange(seg.id)}
               style={{
-                padding: '4px 12px',
+                padding: `${SPACING.xs} 12px`,
                 border: 'none',
-                borderRadius: '4px',
+                borderRadius: RADIUS.sm,
                 cursor: 'pointer',
-                fontSize: '0.875rem',
-                backgroundColor: isActive ? '#ffffff' : 'transparent',
+                fontSize: FONT_SIZE.sm,
+                backgroundColor: isActive ? COLORS.bgSegmentActive : 'transparent',
                 fontWeight: isActive ? 600 : 400,
                 boxShadow: isActive ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
               }}
@@ -67,15 +71,16 @@ export function Toolbar({ activeSegment, onSegmentChange, onSave, label }: Toolb
       </div>
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
         <button
+          aria-label="Save and close editor"
           onClick={onSave}
           style={{
-            padding: '6px 14px',
-            backgroundColor: '#1f2937',
-            color: '#ffffff',
+            padding: `6px 14px`,
+            backgroundColor: COLORS.bgButtonPrimary,
+            color: COLORS.textOnPrimary,
             border: 'none',
-            borderRadius: '6px',
+            borderRadius: RADIUS.md,
             cursor: 'pointer',
-            fontSize: '0.875rem',
+            fontSize: FONT_SIZE.sm,
             fontWeight: 500,
           }}
         >

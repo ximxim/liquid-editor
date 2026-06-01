@@ -32,4 +32,17 @@ describe('Toolbar', () => {
     expect(codeBtn?.getAttribute('aria-pressed')).toBe('true')
     expect(codeBtn?.getAttribute('data-active')).toBe('true')
   })
+
+  it('root element has role="toolbar" and aria-label="Editor toolbar"', () => {
+    const { container } = render(<Toolbar activeSegment="preview" onSegmentChange={vi.fn()} onSave={vi.fn()} />)
+    const toolbar = container.firstChild as HTMLElement
+    expect(toolbar.getAttribute('role')).toBe('toolbar')
+    expect(toolbar.getAttribute('aria-label')).toBe('Editor toolbar')
+  })
+
+  it('Save & Close button has aria-label="Save and close editor"', () => {
+    render(<Toolbar activeSegment="preview" onSegmentChange={vi.fn()} onSave={vi.fn()} />)
+    const saveBtn = screen.getByText('Save & Close').closest('button')
+    expect(saveBtn?.getAttribute('aria-label')).toBe('Save and close editor')
+  })
 })
