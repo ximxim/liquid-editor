@@ -1,4 +1,7 @@
-import { PGlite } from '@electric-sql/pglite'
+// PGlite is imported dynamically to avoid webpack/Next.js WASM bundling issues.
+// Static imports of @electric-sql/pglite cause build failures in environments
+// that don't support WASM (Next.js, Jest/jsdom). Dynamic import ensures PGlite
+// is only resolved at runtime in browser environments.
 
 export interface DbInstance {
   query<T = Record<string, unknown>>(
@@ -41,6 +44,10 @@ const SCHEMA_SQL = `
 `
 
 export async function initDatabase(): Promise<DbInstance> {
+  // webpackIgnore prevents webpack/Next.js from statically bundling PGlite.
+  // PGlite uses WebAssembly + IndexedDB which are only available at runtime
+  // in the browser — they cannot be statically analyzed or bundled.
+  const { PGlite } = await import(/* webpackIgnore: true */ '@electric-sql/pglite')
   const db = new PGlite('idb://liquid-ai-editor')
   await db.exec(SCHEMA_SQL)
   return db as unknown as DbInstance
