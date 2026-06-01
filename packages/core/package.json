@@ -30,6 +30,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^2.0.0",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^25.0.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
@@ -38,6 +39,7 @@
   },
   "dependencies": {
     "@anatine/zod-mock": "^3.14.0",
+    "@electric-sql/pglite": "^0.4.6",
     "@faker-js/faker": "^9.9.0",
     "liquidjs": "^10.27.0",
     "zod": "^3.25.76",
